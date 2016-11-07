@@ -17,6 +17,10 @@ ol, ul {
   margin-bottom: 10px;
 }
 
+.move-selected {
+  font-weight: bold;
+}
+
 .square {
   background: #ffffff;
   border: 1px solid #999999;

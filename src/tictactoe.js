@@ -81,8 +81,11 @@ class Game extends Component {
       const desc = move ?
         'Move #' + move :
         'Game start';
+      const className = move === this.state.stepNumber ?
+        'move-selected' :
+        '';
       return (
-        <li key={move}>
+        <li key={move} className={className}>
           <a href='#' onClick={() => this.jumpTo(move)}>{desc}</a>
         </li>
       );
