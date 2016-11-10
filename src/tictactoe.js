@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import './tictactoe.css';
 
 function Square(props) {
+  const className = 'square ' + (props.highlight ? 'highlight' : '');
+
   return (
-    <button className='square' onClick={() => props.onClick()}>
+    <button className={className} onClick={() => props.onClick()}>
       {props.value}
     </button>
   );
@@ -11,7 +13,13 @@ function Square(props) {
 
 class Board extends Component {
   renderSquare(i) {
-    return <Square value={this.props.squares[i]} onClick={() => this.props.onClick(i)}/>;
+    const winnerInfo = this.props.winnerInfo || {indices: []};
+    const highlight = winnerInfo.indices.includes(i);
+    return <Square
+      highlight={highlight}
+      value={this.props.squares[i]}
+      onClick={() => this.props.onClick(i)}
+    />;
   }
 
   render() {
@@ -76,7 +84,7 @@ class Game extends Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
+    const winnerInfo = calculateWinner(current.squares);
     const moves = history.map((step, move) => {
       const desc = move ?
         'Move #' + move :
@@ -92,8 +100,8 @@ class Game extends Component {
     });
 
     let status;
-    if (winner) {
-      status = 'Winner: ' + winner;
+    if (winnerInfo) {
+      status = 'Winner: ' + winnerInfo.winner;
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
     }
@@ -103,6 +111,7 @@ class Game extends Component {
         <div className='game-board'>
           <Board
             squares={current.squares}
+            winnerInfo={winnerInfo}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -117,21 +126,24 @@ class Game extends Component {
 
 function calculateWinner(squares) {
   const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
   for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
-          }
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return {
+        indices: lines[i],
+        winner: squares[a],
+      };
     }
+  }
   return null;
 }
 
